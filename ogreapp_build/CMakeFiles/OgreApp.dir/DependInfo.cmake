@@ -12,6 +12,10 @@ SET(CMAKE_CXX_COMPILER_ID "GNU")
 # Preprocessor definitions for this target.
 SET(CMAKE_TARGET_DEFINITIONS
   "BOOST_ALL_NO_LIB"
+  "DISABLE_PCAP"
+  "DISABLE_PNG"
+  "EIGEN_USE_NEW_STDVECTOR"
+  "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET"
   )
 
 # Targets to which this target links.
@@ -20,6 +24,12 @@ SET(CMAKE_TARGET_LINKED_INFO_FILES
 
 # The include file search paths:
 SET(CMAKE_C_TARGET_INCLUDE_PATH
+  "/usr/include/vtk-5.8"
+  "/usr/include/pcl-1.7"
+  "/usr/include/eigen3"
+  "/usr/include/ni"
+  "/usr/include/openni2"
+  "../include"
   "/usr/include/ois"
   "/usr/include/OGRE"
   "/usr/share/OGRE/samples/Common/include"

@@ -14,27 +14,11 @@
 #      http://www.ogre3d.org/tikiwiki/
 #-----------------------------------------------------------------------------
 #*/
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.3)
  
 project(OgreApp)
- 
-if(EXISTS "/usr/local/lib/OGRE/cmake")
-
-  set(CMAKE_MODULE_PATH "/usr/local/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
-  set(OGRE_SAMPLES_INCLUDEPATH "/usr/local/share/OGRE/samples/Common/include/") # We could just *assume* that developers uses this basepath : /usr/local
-
-elseif(EXISTS "/usr/lib/OGRE/cmake")
-
-  set(CMAKE_MODULE_PATH "/usr/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
-  set(OGRE_SAMPLES_INCLUDEPATH "/usr/share/OGRE/samples/Common/include/") # Otherwise, this one
-
-elseif(EXISTS "/usr/share/OGRE/cmake/modules")
-  set(CMAKE_MODULE_PATH "/usr/share/OGRE/cmake/modules;${CMAKE_MODULE_PATH}")
-  set(OGRE_SAMPLES_INCLUDEPATH "/usr/share/OGRE/samples/Common/include/") # Otherwise, this one
-
-else ()
-  message(SEND_ERROR "Failed to find module path.")
-endif(EXISTS "/usr/local/lib/OGRE")
+set(CMAKE_MODULE_PATH "/usr/share/OGRE/cmake/modules;${CMAKE_MODULE_PATH}")
+set(OGRE_SAMPLES_INCLUDEPATH "/usr/share/OGRE/samples/Common/include/") # Otherwise, this one
  
 if (CMAKE_BUILD_TYPE STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
@@ -47,6 +31,20 @@ set(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
  
 find_package(OGRE REQUIRED)
+
+find_package(PCL 1.2 REQUIRED COMPONENTS common io
+	sensor_msgs
+	roscpp
+	std_msgs
+	image_transport
+	message_generation
+	pcl_conversions
+  	pcl_ros
+)
+
+include_directories(${PCL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
  
 #if(NOT "${OGRE_VERSION_NAME}" STREQUAL "Cthugha")
 #  message(SEND_ERROR "You need Ogre 1.7 Cthugha to build this.")
@@ -95,7 +93,9 @@ set(SRCS
 	./TutorialApplication.cpp
 )
  
-include_directories( ${OIS_INCLUDE_DIRS}
+include_directories( 
+	include
+	${OIS_INCLUDE_DIRS}
 	${OGRE_INCLUDE_DIRS}
 	${OGRE_SAMPLES_INCLUDEPATH}
 )
@@ -104,7 +104,7 @@ add_executable(OgreApp WIN32 ${HDRS} ${SRCS})
  
 set_target_properties(OgreApp PROPERTIES DEBUG_POSTFIX _d)
  
-target_link_libraries(OgreApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libboost_system.so.1.54.0")
+target_link_libraries(OgreApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${PCL_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${catkin_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libboost_system.so.1.54.0" libvtkCommon.so libvtkFiltering.so libvtkGraphics.so)
  
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/media)

@@ -14,11 +14,27 @@ This source file is part of the
       http://www.ogre3d.org/tikiwiki/
 -----------------------------------------------------------------------------
 */
-#include "TutorialApplication.h"
+#include <iostream>
+#include <pcl/io/vtk_io.h>
+#include <TutorialApplication.h>
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/CEGUISchemeManager.h>
 #include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
-#include "OgreManualObject.h"
+#include <OgreManualObject.h>
+#include <PCLfunctions/cloud_generation.h>
+#include <pcl/surface/gp3.h>
+#include <pcl/kdtree/kdtree_flann.h>
+// #include <pcl/search/kdtree_flann.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/features/normal_3d.h>
+#include <boost/thread/thread.hpp>
+#include <pcl/PolygonMesh.h>
+
+using namespace EXX;
+
+typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
 
 //-------------------------------------------------------------------------------------
 TutorialApplication::TutorialApplication(void)
@@ -37,6 +53,11 @@ void TutorialApplication::createScene(void)
      
     // specify the material (by name) and rendering type
     manual->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+    // Create the point cloud;
+    PointCloudT::Ptr cloud = EXX::PCLfunctions::createCloud();
+    pcl::PolygonMesh mesh;
+    pcl::io::loadPolygonFileVTK ("test", &mesh);
      
     // define vertex position of index 0..3
     manual->position(-100.0, -100.0, 0.0);
